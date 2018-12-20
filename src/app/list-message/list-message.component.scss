@@ -1,0 +1,28 @@
+.tag {
+    padding: 3px;
+    background: rgb(232, 220, 220);
+    color: black;
+    border: black 1px solid;
+    font-size: 10px;
+    text-transform: uppercase;
+    border-radius: 1px;
+    margin-left: 10px;
+    cursor: pointer;
+    float: left;
+}
+
+.selected {
+    background: rgb(132, 255, 120);
+}
+
+.tabs {
+    text-align: center;
+    font-size: 19px;
+    text-decoration: underline;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.tabs-selected {
+    font-weight: bold;
+}

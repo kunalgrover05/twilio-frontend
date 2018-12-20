@@ -1,0 +1,29 @@
+<div class="row" style="width: 100%" *ngIf="error != null">
+        <div class="col-md-8 offset-md-2 col-xs-12 col-sm-12" style="text-align: center">
+            <div class="alert alert-danger" style="width: 100%">
+                {{ error }}
+            </div>
+        </div>
+    </div>
+
+    <form [formGroup]="form" class="row" (ngSubmit)="submitForm()" style="width: 100%; margin-left: auto; margin-right: auto">
+        <div class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
+            <mat-form-field style="line-height: 2; width: 100%">
+                <input matInput placeholder="Username" formControlName="username">
+            </mat-form-field>
+
+        </div>
+
+        <div class="col-md-4 offset-md-4 col-xs-12 col-sm-12">
+            <mat-form-field style="line-height: 2; width: 100%">
+                <input matInput placeholder="Password" type="password" formControlName="password">
+            </mat-form-field>
+        </div>
+
+        <div class="col-md-2 offset-md-5 col-xs-12 col-sm-12" style="margin-top: 20px">
+            <button style="position: relative; width: 100%" type="submit" [disabled]="!form.valid" class="btn">
+                <div class="rippleJS"></div>
+                LOGIN
+            </button>
+        </div>
+    </form>

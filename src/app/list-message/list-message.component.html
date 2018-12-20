@@ -1,0 +1,56 @@
+<div class="row">
+  <div
+    class="col-4 tabs"
+    (click)="selected = 0; filterCustomerSms()"
+    [ngClass]="selected === 0 ? 'tabs-selected' : ''"
+  >
+    All messages
+  </div>
+  <div
+    class="col-4 tabs"
+    (click)="selected = 1; filterCustomerSms()"
+    [ngClass]="selected === 1 ? 'tabs-selected' : ''"
+  >
+    Sent messages
+  </div>
+  <div
+    class="col-4 tabs"
+    (click)="selected = 2; filterCustomerSms()"
+    [ngClass]="selected === 2 ? 'tabs-selected' : ''"
+  >
+    Received messages
+  </div>
+</div>
+
+<div *ngFor="let customer of filteredCustomerSms">
+  <span style="font-size: larger; color: grey; font-weight: bold">{{ customer.name }}</span>
+  <div *ngFor="let s of customer.all_sms">
+    <div class="row" style="margin-top: 10px;">
+      <div class="col-11" [ngClass]="s.type === 'incoming' ? 'offset-6' : null">
+        <div class="message"><i>{{ s.message }}</i></div>
+        <div class="status" style="font-weight: bold; font-size: small">
+          {{ s.status }} {{ s.created | date: "short" }}
+        </div>
+        <div *ngIf="s.type === 'incoming'">
+          <div
+            class="tag"
+            [ngClass]="s.tag == t.id ? 'selected' : ''"
+            *ngFor="let t of tags"
+            (click)="selectTag(t, s)"
+          >
+            {{ t.name }}
+          </div>
+        </div>
+      </div>
+      <div class="col-1">
+        <div *ngIf="saved === s">
+          <i class="fa fa-check" aria-hidden="true"></i>
+        </div>
+        <div *ngIf="saving === s">
+          <i class="fa fa-spinner" aria-hidden="true"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr />
+</div>
