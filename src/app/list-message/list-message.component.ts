@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import deepcopy from 'deepcopy';
 
 @Component({
   selector: 'app-list-message',
@@ -31,31 +32,39 @@ export class ListMessageComponent implements OnInit {
    }
 
   filterCustomerSms() {
-    this.filteredCustomerSms = this.customerSms.filter(x => {
-      if (this.selected === 1) {
-        return x.all_sms.find(sms => sms.type === 'outgoing') != null;
-      } else if (this.selected === 2) {
-        return x.all_sms.find(sms => sms.type === 'incoming') != null;
-      }
-      return true;
+    this.filteredCustomerSms = deepcopy(this.customerSms);
+    console.log(this.filterCustomerSms);
+    this.filteredCustomerSms.forEach(customer => {
+      customer.all_sms = customer.all_sms.filter(x => {
+        if (this.selected === 1) {
+          return x.type === 'outgoing';
+        } else if (this.selected === 2) {
+          return x.type === 'incoming';
+        }
+        return true;
     });
+  });
+  this.filteredCustomerSms = this.filteredCustomerSms.filter(x => {
+    return x.all_sms.length > 0;
+  });
+  console.log(this.filteredCustomerSms);
 
   }
 
   ngOnInit() {
   }
 
-  selectTag(tag, sms) {
+  selectTag(tag, user) {
 
-    this.saving = sms;
-    this.http.patch(environment.base_url + '/sms/' + sms.id + '/', {
+    this.saving = user;
+    this.http.patch(environment.base_url + '/customer/' + user.id + '/', {
       'tag': tag.id
     }).subscribe(data => {
       console.log("Saved");
-      this.saving = sms;
-      sms.tag = tag.id;
+      this.saving = user;
+      user.tag = tag.id;
       this.saving = null;
-      this.saved = sms;
+      this.saved = user;
     });
   }
 }
