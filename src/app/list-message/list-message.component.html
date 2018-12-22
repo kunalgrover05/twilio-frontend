@@ -1,4 +1,4 @@
-<div class="row">
+<!-- <div class="row">
   <div
     class="col-4 tabs"
     (click)="selected = 0; filterCustomerSms()"
@@ -20,15 +20,18 @@
   >
     Received messages
   </div>
-</div>
-
+</div> -->
 <div *ngFor="let customer of filteredCustomerSms">
   <div class="row">
-    <span
+    <div class="col-3">
+      <div style="cursor: pointer; padding: 4px; float: left;"  (click)="expand(customer)">
+          <i class="fa fa-eye"></i>
+        </div>
+          <span
       style="font-size: larger; color: grey; font-weight: bold; float: left"
-      >{{ customer.name }}</span
-    >
-
+      >{{ customer.name }}</span>
+  </div>
+  <div class="col-3">
     <div
       class="tag"
       [ngClass]="customer.tag == t.id ? 'selected' : ''"
@@ -44,18 +47,35 @@
       <i class="fa fa-spinner" aria-hidden="true"></i>
     </div>
   </div>
-
-  <div *ngFor="let s of customer.all_sms">
-    <div class="row" style="margin-top: 10px;">
-      <div class="col-6" [ngClass]="s.type === 'incoming' ? 'offset-6' : null">
-        <div class="message">
-          <i>{{ s.message }}</i>
-        </div>
-        <div class="status" style="font-weight: bold; font-size: small">
-          {{ s.status }} {{ s.created | date: "short" }}
+<div class="col-6" *ngIf="customer != expandCustomer && customer.last_sms">
+    <div class="message">
+        <i *ngIf="customer.last_sms.type === 'incoming'" class="fa fa-arrow-down"></i>
+        <i *ngIf="customer.last_sms.type === 'outgoing'" class="fa fa-arrow-up"></i>
+    <i>{{ customer.last_sms.message }}</i>
+  
+      </div>
+      <div class="status" style="font-weight: bold; font-size: small">
+        {{ customer.last_sms.status }} {{ customer.last_sms.created | date: "short" }}
+      </div>
+</div>
+  </div>
+  <div *ngIf="customer === expandCustomer">
+    <div *ngIf="customer.all_sms == null">
+        <i class="fa fa-spinner" aria-hidden="true"></i>
+    </div>
+    <div class="row" *ngFor="let sms of customer.all_sms" style="margin-top: 10px">
+      <div class="col-6" [ngClass]="sms.type === 'incoming' ? 'offset-6' : null">
+          <div class="message">
+              <i *ngIf="sms.type === 'incoming'" class="fa fa-arrow-down"></i>
+              <i *ngIf="sms.type === 'outgoing'" class="fa fa-arrow-up"></i>      
+            <i>{{ sms.message }}</i>
+          </div>
+          <div class="status" style="font-weight: bold; font-size: small">
+            {{ sms.status }} {{ sms.created | date: "short" }}
+          </div>
         </div>
       </div>
     </div>
-  </div>
+    
   <hr />
 </div>

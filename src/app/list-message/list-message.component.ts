@@ -9,6 +9,7 @@ import deepcopy from 'deepcopy';
   styleUrls: ['./list-message.component.scss']
 })
 export class ListMessageComponent implements OnInit {
+  expandCustomer: any;
   sms = [];
   tags = [];
   saved = null;
@@ -32,22 +33,23 @@ export class ListMessageComponent implements OnInit {
    }
 
   filterCustomerSms() {
-    this.filteredCustomerSms = deepcopy(this.customerSms);
-    console.log(this.filterCustomerSms);
-    this.filteredCustomerSms.forEach(customer => {
-      customer.all_sms = customer.all_sms.filter(x => {
-        if (this.selected === 1) {
-          return x.type === 'outgoing';
-        } else if (this.selected === 2) {
-          return x.type === 'incoming';
-        }
-        return true;
-    });
-  });
-  this.filteredCustomerSms = this.filteredCustomerSms.filter(x => {
-    return x.all_sms.length > 0;
-  });
-  console.log(this.filteredCustomerSms);
+    this.filteredCustomerSms = this.customerSms;
+    // this.filteredCustomerSms = deepcopy(this.customerSms);
+    // console.log(this.filterCustomerSms);
+    // this.filteredCustomerSms.forEach(customer => {
+    //   customer.all_sms = customer.all_sms.filter(x => {
+    //     if (this.selected === 1) {
+    //       return x.type === 'outgoing';
+    //     } else if (this.selected === 2) {
+    //       return x.type === 'incoming';
+    //     }
+    //     return true;
+    // });
+  // });
+  // this.filteredCustomerSms = this.filteredCustomerSms.filter(x => {
+    // return x.all_sms.length > 0;
+  // });
+  // console.log(this.filteredCustomerSms);
 
   }
 
@@ -66,5 +68,14 @@ export class ListMessageComponent implements OnInit {
       this.saving = null;
       this.saved = user;
     });
+  }
+
+  expand(customer) {
+    this.expandCustomer = customer;
+    this.http.get(environment.base_url + '/customerSms/' + customer.id.toString() + '/')
+      .subscribe(data => {
+        this.expandCustomer.all_sms = data['all_sms'];
+        console.log(this.expandCustomer);
+      });
   }
 }
