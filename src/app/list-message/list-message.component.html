@@ -24,15 +24,10 @@
 <div *ngFor="let customer of filteredCustomerSms">
   <div class="row">
     <div class="col-3">
-      <div
-        style="cursor: pointer; padding: 4px; float: left;"
-        (click)="expand(customer)"
-      >
+      <div style="cursor: pointer; padding: 4px; float: left;" (click)="expand(customer)">
         <i class="fa fa-eye"></i>
       </div>
-      <div
-        style="font-size: larger; color: grey; font-weight: bold;"
-        >{{ customer.name }}
+      <div style="font-size: larger; color: grey; font-weight: bold;">{{ customer.name }}
       </div>
       <div style="color: grey;">
         <ng-container *ngIf="customer.street_address">
@@ -50,12 +45,7 @@
       </div>
     </div>
     <div class="col-3">
-      <div
-        class="tag"
-        [ngClass]="customer.tag == t.id ? 'selected' : ''"
-        *ngFor="let t of tags"
-        (click)="selectTag(t, customer)"
-      >
+      <div class="tag" [ngClass]="customer.tag == t.id ? 'selected' : ''" *ngFor="let t of tags" (click)="selectTag(t, customer)">
         {{ t.name }}
       </div>
       <div *ngIf="saved === customer">
@@ -67,14 +57,8 @@
     </div>
     <div class="col-6" *ngIf="customer != expandCustomer && customer.last_sms">
       <div class="message">
-        <i
-          *ngIf="customer.last_sms.type === 'incoming'"
-          class="fa fa-arrow-down"
-        ></i>
-        <i
-          *ngIf="customer.last_sms.type === 'outgoing'"
-          class="fa fa-arrow-up"
-        ></i>
+        <i *ngIf="customer.last_sms.type === 'incoming'" class="fa fa-arrow-down"></i>
+        <i *ngIf="customer.last_sms.type === 'outgoing'" class="fa fa-arrow-up"></i>
         <i>{{ customer.last_sms.message }}</i>
       </div>
       <div class="status" style="font-weight: bold; font-size: small">
@@ -87,15 +71,8 @@
     <div *ngIf="customer.all_sms == null">
       <i class="fa fa-spinner" aria-hidden="true"></i>
     </div>
-    <div
-      class="row"
-      *ngFor="let sms of customer.all_sms"
-      style="margin-top: 10px"
-    >
-      <div
-        class="col-6"
-        [ngClass]="sms.type === 'incoming' ? 'offset-6' : null"
-      >
+    <div class="row" *ngFor="let sms of customer.all_sms" style="margin-top: 10px">
+      <div class="col-6" [ngClass]="sms.type === 'incoming' ? 'offset-6' : null">
         <div class="message">
           <i *ngIf="sms.type === 'incoming'" class="fa fa-arrow-down"></i>
           <i *ngIf="sms.type === 'outgoing'" class="fa fa-arrow-up"></i>
@@ -105,6 +82,32 @@
           {{ sms.status }} {{ sms.created | date: "short" }}
         </div>
       </div>
+    </div>
+    <div>
+      <form [formGroup]="sendMessage" (ngSubmit)="submitForm()">
+        <div class="row">
+          <div class="col-10">
+
+            <mat-form-field style="width: 100%">
+              <input type="text" matInput formControlName="message" [matAutocomplete]="auto" placeholder="Reply">
+            </mat-form-field>
+
+            <mat-autocomplete #auto="matAutocomplete">
+              <mat-option *ngFor="let message of filteredOptions | async" [value]="message">{{message}}</mat-option>
+            </mat-autocomplete>
+          </div>
+          <input type="hidden" formControlName="customer" value="{{customer.id}}" [ngModel]="customer.id" />
+
+          <div class="col-2">
+            <button [disabled]="!sendMessage.valid || sending" mat-raised-button color="primary" type="submit">Submit</button>
+            <i *ngIf="sending" class="fa fa-spinner" aria-hidden="true"></i>
+
+          </div>
+        </div>
+
+      </form>
+
+
     </div>
   </div>
 

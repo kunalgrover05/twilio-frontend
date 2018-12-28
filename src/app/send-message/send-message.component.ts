@@ -99,16 +99,6 @@ export class SendMessageComponent implements OnInit {
         });
     }
 
-    displayFn(x) {
-      return x ? x.name : x;
-    }
-
-    update(user) {
-      console.log("Setting user");
-      console.log(user.option.value.id);
-      this.sendMessage.get('customer').setValue(user.option.value.id);
-    }
-
     selectedMessage(type, event) {
       console.log(type);
       console.log(event);

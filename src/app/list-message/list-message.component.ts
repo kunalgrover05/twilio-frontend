@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import deepcopy from 'deepcopy';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { StateService } from '../state.service';
 
 @Component({
   selector: 'app-list-message',
@@ -19,7 +23,14 @@ export class ListMessageComponent implements OnInit {
   customerSms = [];
   filteredCustomerSms = [];
 
-  constructor(public http: HttpClient) {
+  sendMessage = new FormGroup({
+    message: new FormControl(null, [Validators.required]),
+    customer: new FormControl(null, [Validators.required])
+  })
+  sending: boolean;
+  messages: string[];
+  filteredOptions: Observable<string[]>;
+  constructor(public http: HttpClient, private state: StateService) {
     http.get(environment.base_url + '/tag')
     .subscribe(data => {
       this.tags = <Array<any>>data;
@@ -30,6 +41,12 @@ export class ListMessageComponent implements OnInit {
       this.customerSms = <Array<any>>data;
       this.filterCustomerSms();
     });
+
+    http.get(environment.base_url + '/messageTemplate')
+    .subscribe(data => {
+      this.messages = (<Array<any>>data).map(x => x.text);
+    });
+
    }
 
   filterCustomerSms() {
@@ -54,6 +71,22 @@ export class ListMessageComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.filteredOptions = this.sendMessage.get('message').valueChanges
+    .pipe(
+      map(value => {
+        this.sending = false;
+        if ( typeof(value) === 'string' || value instanceof String) {
+          return this._filter(value.toString());
+        } else {
+          return this.messages;
+        }
+      })
+    );
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.messages.filter(option => option.toLowerCase().includes(filterValue));
   }
 
   selectTag(tag, user) {
@@ -77,5 +110,27 @@ export class ListMessageComponent implements OnInit {
         this.expandCustomer.all_sms = data['all_sms'];
         console.log(this.expandCustomer);
       });
+  }
+
+  submitForm() {
+    this.sending = true;
+    const customerId = this.sendMessage.value['customer'];
+    this.http.post(environment.base_url + '/send_message/', this.sendMessage.value, {
+      headers: {
+        Authorization: "Token " + this.state.getToken()
+      }
+    })
+      .subscribe(data => {
+        console.log("MESSAGE SENT");
+        this.sending = false;
+
+        // Add this message
+        const customer = this.customerSms.find(x => x.id == customerId);
+
+        customer.all_sms.unshift(data);
+
+        this.sendMessage.reset();
+      });
+  
   }
 }
