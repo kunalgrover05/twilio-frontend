@@ -124,14 +124,19 @@ export class ListMessageComponent implements OnInit {
   }
 
   selectTag(tag, user) {
-
+    var tagId;
+    if (tag.id === user.tag) {
+      tagId = null;
+    } else {
+      tagId = tag.id
+    }
     this.saving = user;
     this.http.patch(environment.base_url + '/customer/' + user.id + '/', {
-      'tag': tag.id
+      'tag': tagId
     }).subscribe(data => {
       console.log("Saved");
       this.saving = user;
-      user.tag = tag.id;
+      user.tag = tagId;
       this.saving = null;
       this.saved = user;
     });
