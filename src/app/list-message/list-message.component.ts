@@ -7,6 +7,10 @@ import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { StateService } from '../state.service';
 
+export class PagingInformation {
+  current: number;
+  pagesLength: number;
+}
 @Component({
   selector: 'app-list-message',
   templateUrl: './list-message.component.html',
@@ -33,6 +37,7 @@ export class ListMessageComponent implements OnInit {
     console.log("Update", type);
     console.log(event);
 
+    this.page = 1;
     this.filter[type] = event;
     this.loadSms();
   }
@@ -44,7 +49,7 @@ export class ListMessageComponent implements OnInit {
   sending: boolean;
   messages: string[];
   filteredOptions: Observable<string[]>;
-  pageInformation = {};
+  pageInformation: PagingInformation = <PagingInformation> {};
   constructor(public http: HttpClient, private state: StateService) {
     http.get(environment.base_url + '/tag')
       .subscribe(data => {
@@ -98,7 +103,6 @@ export class ListMessageComponent implements OnInit {
         this.customerSms = <Array<any>>data['results'];
         this.pageInformation = {
           pagesLength: data['total_pages'],
-          links: data['links'],
           current: data['current']
         }
       });
