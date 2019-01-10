@@ -18,10 +18,24 @@ export class ListMessageComponent implements OnInit {
   tags = [];
   saved = null;
   saving = null;
-  selected = 0;
-  filteredSms = [];
   customerSms = [];
-  filteredCustomerSms = [];
+
+  page = 1;
+  loading = false;
+
+  filter = {
+    message: 'all',
+    order: 'new',
+    tag: "ALL"
+  }
+
+  updateFilter(type: string, event) {
+    console.log("Update", type);
+    console.log(event);
+
+    this.filter[type] = event;
+    this.loadSms();
+  }
 
   sendMessage = new FormGroup({
     message: new FormControl(null, [Validators.required]),
@@ -30,58 +44,78 @@ export class ListMessageComponent implements OnInit {
   sending: boolean;
   messages: string[];
   filteredOptions: Observable<string[]>;
+  pageInformation = {};
   constructor(public http: HttpClient, private state: StateService) {
     http.get(environment.base_url + '/tag')
-    .subscribe(data => {
-      this.tags = <Array<any>>data;
-    });
+      .subscribe(data => {
+        this.tags = <Array<any>>data;
+      });
 
-    http.get(environment.base_url + '/customerSms')
-    .subscribe(data => {
-      this.customerSms = <Array<any>>data;
-      this.filterCustomerSms();
-    });
 
     http.get(environment.base_url + '/messageTemplate')
-    .subscribe(data => {
-      this.messages = (<Array<any>>data).map(x => x.text);
-    });
+      .subscribe(data => {
+        this.messages = (<Array<any>>data).map(x => x.text);
+      });
 
-   }
+    this.loadSms();
+  }
 
-  filterCustomerSms() {
-    this.filteredCustomerSms = this.customerSms;
-    // this.filteredCustomerSms = deepcopy(this.customerSms);
-    // console.log(this.filterCustomerSms);
-    // this.filteredCustomerSms.forEach(customer => {
-    //   customer.all_sms = customer.all_sms.filter(x => {
-    //     if (this.selected === 1) {
-    //       return x.type === 'outgoing';
-    //     } else if (this.selected === 2) {
-    //       return x.type === 'incoming';
-    //     }
-    //     return true;
-    // });
-  // });
-  // this.filteredCustomerSms = this.filteredCustomerSms.filter(x => {
-    // return x.all_sms.length > 0;
-  // });
-  // console.log(this.filteredCustomerSms);
+  loadSms() {
+    this.loading = true;
+    const params = {}
 
+    switch (this.filter.message) {
+      case 'sent':
+        params['latest_sms__type'] = 'outgoing';
+        break;
+      case 'replied':
+        params['latest_sms__type'] = 'incoming';
+        break;
+      case 'no':
+        params['no_message'] = '1';
+        break;
+    }
+
+    switch (this.filter.order) {
+      case 'old':
+        params['ordering'] = 'latest_sms__created';
+        break;
+      case 'new':
+        params['ordering'] = '-latest_sms__created';
+        break;
+    }
+
+    if (this.filter.tag !== "ALL") {
+      params['tag'] = this.filter.tag;
+    }
+
+    params['page'] = this.page;
+    this.http.get(environment.base_url + '/customerSms', {
+      params: params
+    })
+      .subscribe(data => {
+        this.loading = false;
+        this.customerSms = <Array<any>>data['results'];
+        this.pageInformation = {
+          pagesLength: data['total_pages'],
+          links: data['links'],
+          current: data['current']
+        }
+      });
   }
 
   ngOnInit() {
     this.filteredOptions = this.sendMessage.get('message').valueChanges
-    .pipe(
-      map(value => {
-        this.sending = false;
-        if ( typeof(value) === 'string' || value instanceof String) {
-          return this._filter(value.toString());
-        } else {
-          return this.messages;
-        }
-      })
-    );
+      .pipe(
+        map(value => {
+          this.sending = false;
+          if (typeof (value) === 'string' || value instanceof String) {
+            return this._filter(value.toString());
+          } else {
+            return this.messages;
+          }
+        })
+      );
   }
 
   private _filter(value: string): string[] {
@@ -115,11 +149,24 @@ export class ListMessageComponent implements OnInit {
   submitForm() {
     this.sending = true;
     const customerId = this.sendMessage.value['customer'];
-    this.http.post(environment.base_url + '/send_message/', this.sendMessage.value, {
-      headers: {
-        Authorization: "Token " + this.state.getToken()
-      }
-    })
+
+    var preferred_number = null;
+    // Get the last SMS ID as the preferred sender phone number to send
+    if (this.expandCustomer.all_sms && this.expandCustomer.all_sms.length > 0) {
+      preferred_number = this.expandCustomer.all_sms[0].sender_number;
+    }
+
+    console.log("PREFERRED NUMBER", preferred_number);
+
+    this.http.post(environment.base_url + '/send_message/', {
+      'preferred_number': preferred_number,
+      'customer': customerId,
+      'message': this.sendMessage.value['message']
+    }, {
+        headers: {
+          Authorization: "Token " + this.state.getToken()
+        }
+      })
       .subscribe(data => {
         console.log("MESSAGE SENT");
         this.sending = false;
@@ -131,6 +178,6 @@ export class ListMessageComponent implements OnInit {
 
         this.sendMessage.reset();
       });
-  
+
   }
 }

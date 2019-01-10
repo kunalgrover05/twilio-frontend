@@ -7,7 +7,8 @@ import {
   MatSelectModule,
   MatNativeDateModule,
   MatAutocompleteModule,
-  MatButtonModule
+  MatButtonModule,
+  MatChipsModule
 } from "@angular/material";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatGridListModule } from "@angular/material/grid-list";
@@ -21,6 +22,7 @@ import { MatInputModule } from "@angular/material/input";
     MatSidenavModule,
     BrowserAnimationsModule,
     MatToolbarModule,
+    MatChipsModule,
     MatIconModule,
     MatGridListModule,
     MatSelectModule,
@@ -35,6 +37,7 @@ import { MatInputModule } from "@angular/material/input";
     MatSidenavModule,
     BrowserAnimationsModule,
     MatToolbarModule,
+    MatChipsModule,
     MatIconModule,
     MatGridListModule,
     MatSelectModule,

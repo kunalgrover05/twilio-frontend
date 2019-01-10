@@ -1,27 +1,60 @@
-<!-- <div class="row">
-  <div
-    class="col-4 tabs"
-    (click)="selected = 0; filterCustomerSms()"
-    [ngClass]="selected === 0 ? 'tabs-selected' : ''"
-  >
-    All messages
+<div *ngIf="loading" class="overlay">
+  <div style="position: absolute; top: 50%; font-size: 32px; left: 50%;">Loading ...</div>
+</div>
+<div class="row">
+  <div class="col-4">
+    <mat-form-field style="width: 100%">
+      <mat-label>Filter by tags</mat-label>
+      <mat-select [(value)]="filter.tag" (selectionChange)="updateFilter('tag', $event.value)">
+        <mat-option value="ALL">All</mat-option>
+        <mat-option *ngFor="let tag of tags" [value]="tag.id">{{tag.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
-  <div
-    class="col-4 tabs"
-    (click)="selected = 1; filterCustomerSms()"
-    [ngClass]="selected === 1 ? 'tabs-selected' : ''"
-  >
-    Sent messages
+
+  <div class="col-4">
+    <mat-form-field style="width: 100%">
+      <mat-label>Show users with</mat-label>
+      <mat-chip-list>
+
+        <mat-chip (click)="updateFilter('message', 'all')" [selected]="filter.message === 'all'">All</mat-chip>
+        <mat-chip (click)="updateFilter('message', 'no')" [selected]="filter.message === 'no'">No messages</mat-chip>
+        <mat-chip (click)="updateFilter('message', 'replied')" [selected]="filter.message === 'replied'">Last Replied</mat-chip>
+        <mat-chip (click)="updateFilter('message', 'sent')" [selected]="filter.message === 'sent'">Last sent</mat-chip>
+
+      </mat-chip-list>
+    </mat-form-field>
+
   </div>
-  <div
-    class="col-4 tabs"
-    (click)="selected = 2; filterCustomerSms()"
-    [ngClass]="selected === 2 ? 'tabs-selected' : ''"
-  >
-    Received messages
+
+  <div class="col-4">
+    <mat-form-field style="width: 100%">
+      <mat-label>Order by</mat-label>
+      <mat-chip-list>
+        <mat-chip (click)="updateFilter('order', 'old')" [selected]="filter.order === 'old'">Oldest first</mat-chip>
+        <mat-chip (click)="updateFilter('order', 'new')" [selected]="filter.order === 'new'">Newest first</mat-chip>
+      </mat-chip-list>
+    </mat-form-field>
   </div>
-</div> -->
-<div *ngFor="let customer of filteredCustomerSms">
+
+</div>
+
+<div class="row" style="margin-bottom: 10px; padding: 10px; text-align: center; background: rgba(200, 200, 200, 0.4)"  >
+  <div class="col-2" style="cursor: pointer;"  [hidden]="pageInformation.current === 1" (click)="page=page-1; loadSms();">
+      <i class="fa fa-arrow-left"></i>
+    Go back
+  </div>
+  <div *ngIf="pageInformation.current === 1" class="col-2"></div>
+  <div class="col-8" style="text-decoration: underline">
+    Showing {{ pageInformation.current }} of {{ pageInformation.pagesLength }} pages.
+  </div>
+  <div class="col-2" style="cursor: pointer;" [hidden]="pageInformation.pagesLength === pageInformation.current" (click)="page=page+1; loadSms();">
+    Go next
+    <i class="fa fa-arrow-right"></i>
+  </div>
+
+</div>
+<div *ngFor="let customer of customerSms">
   <div class="row">
     <div class="col-3">
       <div style="cursor: pointer; padding: 4px; float: left;" (click)="expand(customer)">
@@ -55,15 +88,15 @@
         <i class="fa fa-spinner" aria-hidden="true"></i>
       </div>
     </div>
-    <div class="col-6" *ngIf="customer != expandCustomer && customer.last_sms">
+    <div class="col-6" *ngIf="customer != expandCustomer && customer.latest_sms">
       <div class="message">
-        <i *ngIf="customer.last_sms.type === 'incoming'" class="fa fa-arrow-down"></i>
-        <i *ngIf="customer.last_sms.type === 'outgoing'" class="fa fa-arrow-up"></i>
-        <i>{{ customer.last_sms.message }}</i>
+        <i *ngIf="customer.latest_sms.type === 'incoming'" class="fa fa-arrow-down"></i>
+        <i *ngIf="customer.latest_sms.type === 'outgoing'" class="fa fa-arrow-up"></i>
+        <i>{{ customer.latest_sms.message }}</i>
       </div>
       <div class="status" style="font-weight: bold; font-size: small">
-        {{ customer.last_sms.status }}
-        {{ customer.last_sms.created | date: "short" }}
+        {{ customer.latest_sms.status }}
+        {{ customer.latest_sms.created | date: "short" }}
       </div>
     </div>
   </div>
