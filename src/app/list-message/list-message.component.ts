@@ -50,6 +50,7 @@ export class ListMessageComponent implements OnInit {
   messages: string[];
   filteredOptions: Observable<string[]>;
   pageInformation: PagingInformation = <PagingInformation> {};
+
   constructor(public http: HttpClient, private state: StateService) {
     http.get(environment.base_url + '/tag')
       .subscribe(data => {

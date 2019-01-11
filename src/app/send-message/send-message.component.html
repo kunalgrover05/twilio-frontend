@@ -1,40 +1,60 @@
+<div *ngIf="loading" class="overlay">
+  <div style="position: absolute; top: 50%; font-size: 32px; left: 50%;">Loading ...</div>
+</div>
 
 <div class="row">
-  <div class="col-12">   <h3>
-  Send a new message
-</h3>
-</div>
- 
-  
+  <div class="col-12">
+    <h3>
+      Send a new message
+    </h3>
+  </div>
 </div>
 <div class="row">
   <div class="col-md-5">
-      <mat-form-field style="width: 100%">
-          <mat-label>
-            Select message template
-          </mat-label>
-        <mat-select [formControl]="messageTemplateControl" (selectionChange)="selectedMessage(0, $event)">
-            <mat-option *ngFor="let message of messageTemplates"  [value]="message.id">{{message.text}}</mat-option>
-        </mat-select>
-        </mat-form-field>
-        
+    <mat-form-field style="width: 100%">
+      <mat-label>
+        Select message template
+      </mat-label>
+      <mat-select [formControl]="messageTemplateControl" (selectionChange)="selectedMessage(0, $event)">
+        <mat-option *ngFor="let message of messageTemplates" [value]="message.id">{{message.text}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
   </div>
   <div class="col-md-2" style="text-align: center; margin-top: auto; margin-bottom: auto;">
     OR
   </div>
   <div class="col-md-5">
-    <mat-form-field   style="width: 100%">
-        <mat-label>
-            Type message here
-          </mat-label>
-          <input [formControl]="messageInputControl" matInput type='text'  (input)="selectedMessage(1, $event)">
-      </mat-form-field>
-      
+    <mat-form-field style="width: 100%">
+      <mat-label>
+        Type message here
+      </mat-label>
+      <input [formControl]="messageInputControl" matInput type='text' (input)="selectedMessage(1, $event)">
+    </mat-form-field>
+
   </div>
 </div>
 <div *ngIf="message">
   Your message: <b>{{ message }}</b>
 </div>
+
+<div class="row" style="margin-bottom: 10px; padding: 10px; text-align: center; background: rgba(200, 200, 200, 0.4)">
+  <div class="col-2" style="cursor: pointer;" [hidden]="pageInformation.current === 1" (click)="page=page-1; loadCustomers();">
+    <i class="fa fa-arrow-left"></i>
+    Go back
+  </div>
+  <div *ngIf="pageInformation.current === 1" class="col-2"></div>
+  <div class="col-8" style="text-decoration: underline">
+    Showing {{ pageInformation.current }} of {{ pageInformation.pagesLength }} pages.
+  </div>
+  <div class="col-2" style="cursor: pointer;" [hidden]="pageInformation.pagesLength === pageInformation.current"
+    (click)="page=page+1; loadCustomers();">
+    Go next
+    <i class="fa fa-arrow-right"></i>
+  </div>
+
+</div>
+
 <!-- <form [formGroup]="sendMessage" (ngSubmit)="submitForm()">
     <div class="row">
         <div class="col-3">
@@ -62,34 +82,36 @@
 
 <hr />
 <div class="row">
-  <div class="col-2" >
+  <div class="col-2">
     <div style="border: 1px #ccc solid;">
 
-    <b>Select a contact list</b>
-    <ul>
-      <li style='cursor:pointer' [ngStyle]="{'font-weight': selectedListName === 'ALL' ? 'bold' : ''}" (click)="selectedList('ALL')">All Lists</li>
-      <li style='cursor:pointer'  [ngStyle]="{'font-weight': selectedListName === contactList ? 'bold' : ''}" *ngFor="let contactList of lists" (click)="selectedList(contactList)">
-        {{ contactList }}
-      </li>
-    </ul>
+      <b>Select a contact list</b>
+      <ul>
+        <li style='cursor:pointer' [ngStyle]="{'font-weight': selectedListName === 'ALL' ? 'bold' : ''}" (click)="selectedList('ALL')">All
+          Lists</li>
+        <li style='cursor:pointer' [ngStyle]="{'font-weight': selectedListName === contactList ? 'bold' : ''}" *ngFor="let contactList of lists"
+          (click)="selectedList(contactList)">
+          {{ contactList }}
+        </li>
+      </ul>
     </div>
 
   </div>
   <div class="col-10">
-<div *ngFor="let user of selectedUsers" class="row">
-  <div class="col-md-3 col-6">
-  {{user.name}}
-  </div>
-  <div class="col-md-3 col-6">
-  {{ user.phone_number }}
-  </div>
-  <div class="col-md-3 col-6">
-      <button mat-raised-button color="primary" [disabled]="message == null" (click)="sendMessageFn(user)">Send</button>
-  </div>
-  <div class="col-md-3 col-6">
-  <div *ngIf="sent === user" class="alert alert-success" role="alert">
-      <strong>Message sent successfully!</strong>
+    <div *ngFor="let user of selectedUsers" class="row">
+      <div class="col-md-3 col-6">
+        {{user.name}}
+      </div>
+      <div class="col-md-3 col-6">
+        {{ user.phone_number }}
+      </div>
+      <div class="col-md-3 col-6">
+        <button mat-raised-button color="primary" [disabled]="message == null" (click)="sendMessageFn(user)">Send</button>
+      </div>
+      <div class="col-md-3 col-6">
+        <div *ngIf="sent[user.id]" class="alert alert-success" role="alert">
+          <strong>Message sent successfully!</strong>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-</div>
