@@ -17,7 +17,6 @@ export class SendMessageComponent implements OnInit {
   users = [];
   messageTemplates = [];
   lists = [];
-  selectedUsers = [];
 
   sent = {};
 
@@ -52,15 +51,20 @@ export class SendMessageComponent implements OnInit {
 
   loadCustomers() {
     this.loading = true;
+    const params = {
+      'page': this.page.toString() 
+    };
+
+    if (this.selectedListName !== 'ALL') {
+      params['contact_list'] = this.selectedListName;
+    }
+
     this.http.get(environment.base_url + '/customer', {
-      params: {
-        'page': this.page.toString()
-      }
+      params: params
     })
       .subscribe(data => {
         this.users = <Array<any>>data['results'];
         this.loading = false;
-        this.selectedList('ALL');
         this.pageInformation = {
           pagesLength: data['total_pages'],
           current: data['current']
@@ -135,10 +139,7 @@ export class SendMessageComponent implements OnInit {
 
   selectedList(contactList) {
     this.selectedListName = contactList;
-    if (contactList === 'ALL') {
-      this.selectedUsers = this.users;
-    } else {
-      this.selectedUsers = this.users.filter(x => x.contact_list === contactList)
-    }
+    this.page = 1;
+    this.loadCustomers();
   }
 }
