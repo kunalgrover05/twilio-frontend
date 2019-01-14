@@ -6,6 +6,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { StateService } from '../state.service';
+import { saveAs } from 'file-saver';
 
 export class PagingInformation {
   current: number;
@@ -49,16 +50,24 @@ export class ListMessageComponent implements OnInit {
   sending: boolean;
   messages: string[];
   filteredOptions: Observable<string[]>;
-  pageInformation: PagingInformation = <PagingInformation> {};
+  pageInformation: PagingInformation = <PagingInformation>{};
 
   constructor(public http: HttpClient, private state: StateService) {
-    http.get(environment.base_url + '/tag')
+    http.get(environment.base_url + '/tag', {
+      headers: {
+        'Authorization': 'Token ' + this.state.getToken()
+      }
+    })
       .subscribe(data => {
         this.tags = <Array<any>>data;
       });
 
 
-    http.get(environment.base_url + '/messageTemplate')
+    http.get(environment.base_url + '/messageTemplate', {
+      headers: {
+        'Authorization': 'Token ' + this.state.getToken()
+      }
+    })
       .subscribe(data => {
         this.messages = (<Array<any>>data).map(x => x.text);
       });
@@ -66,8 +75,7 @@ export class ListMessageComponent implements OnInit {
     this.loadSms();
   }
 
-  loadSms() {
-    this.loading = true;
+  getParams() {
     const params = {}
 
     switch (this.filter.message) {
@@ -96,8 +104,16 @@ export class ListMessageComponent implements OnInit {
     }
 
     params['page'] = this.page;
+    return params;
+  }
+
+  loadSms() {
+    this.loading = true;
     this.http.get(environment.base_url + '/customerSms', {
-      params: params
+      headers: {
+        'Authorization': 'Token ' + this.state.getToken()
+      },
+      params: this.getParams()
     })
       .subscribe(data => {
         this.loading = false;
@@ -138,18 +154,26 @@ export class ListMessageComponent implements OnInit {
     this.saving = user;
     this.http.patch(environment.base_url + '/customer/' + user.id + '/', {
       'tag': tagId
-    }).subscribe(data => {
-      console.log("Saved");
-      this.saving = user;
-      user.tag = tagId;
-      this.saving = null;
-      this.saved = user;
-    });
+    }, {
+        headers: {
+          'Authorization': 'Token ' + this.state.getToken()
+        },
+      }).subscribe(data => {
+        console.log("Saved");
+        this.saving = user;
+        user.tag = tagId;
+        this.saving = null;
+        this.saved = user;
+      });
   }
 
   expand(customer) {
     this.expandCustomer = customer;
-    this.http.get(environment.base_url + '/customerSms/' + customer.id.toString() + '/')
+    this.http.get(environment.base_url + '/customerSms/' + customer.id.toString() + '/', {
+      headers: {
+        'Authorization': 'Token ' + this.state.getToken()
+      }
+    })
       .subscribe(data => {
         this.expandCustomer.all_sms = data['all_sms'];
         console.log(this.expandCustomer);
@@ -188,6 +212,25 @@ export class ListMessageComponent implements OnInit {
 
         this.sendMessage.reset();
       });
+
+  }
+
+  export() {
+    this.loading = true;
+    this.http.get(environment.base_url + '/customerSmsExport/', {
+      params: this.getParams(),
+      headers: {
+        'Authorization': 'Token ' + this.state.getToken(),
+        'Content-Type': 'application/vnd.openxml...sheet'
+      },
+      responseType: 'blob'
+    })
+      .subscribe(data => {
+        saveAs(data, 'export.xlsx');
+
+        this.loading = false;
+      });
+
 
   }
 }

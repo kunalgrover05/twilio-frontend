@@ -37,12 +37,20 @@ export class SendMessageComponent implements OnInit {
     'message': new FormControl('', Validators.required),
   });
   constructor(public http: HttpClient, public state: StateService) {
-    http.get(environment.base_url + '/messageTemplate')
+    http.get(environment.base_url + '/messageTemplate', {
+      headers: {
+        Authorization: "Token " + this.state.getToken()
+      }
+    })
       .subscribe(data => {
         this.messageTemplates = <Array<any>>data;
         console.log(this.users);
       });
-    http.get(environment.base_url + '/contactList')
+    http.get(environment.base_url + '/contactList', {
+      headers: {
+        Authorization: "Token " + this.state.getToken()
+      }
+    })
       .subscribe(data => {
         this.lists = <Array<any>>data;
       });
@@ -60,7 +68,10 @@ export class SendMessageComponent implements OnInit {
     }
 
     this.http.get(environment.base_url + '/customer', {
-      params: params
+      params: params,
+      headers: {
+        Authorization: "Token " + this.state.getToken()
+      }
     })
       .subscribe(data => {
         this.users = <Array<any>>data['results'];
