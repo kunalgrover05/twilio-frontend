@@ -2,9 +2,9 @@
   <div style="position: absolute; top: 50%; font-size: 32px; left: 50%;">Loading ...</div>
 </div>
 <div class="row">
-  <div class="col-4">
-    <mat-form-field style="width: 100%">
-      <mat-label>Filter by tags</mat-label>
+  <div class="col-3">
+    <mat-form-field style="width: 100%; height: 60px">
+      <mat-label>Filter by group</mat-label>
       <mat-select [(value)]="filter.tag" (selectionChange)="updateFilter('tag', $event.value)">
         <mat-option value="ALL">All</mat-option>
         <mat-option *ngFor="let tag of tags" [value]="tag.id">{{tag.name}}</mat-option>
@@ -12,7 +12,7 @@
     </mat-form-field>
   </div>
 
-  <div class="col-4">
+  <div class="col-3">
     <mat-form-field style="width: 100%">
       <mat-label>Show users with</mat-label>
       <mat-chip-list>
@@ -27,7 +27,7 @@
 
   </div>
 
-  <div class="col-4">
+  <div class="col-3">
     <mat-form-field style="width: 100%">
       <mat-label>Order by</mat-label>
       <mat-chip-list>
@@ -37,19 +37,34 @@
     </mat-form-field>
   </div>
 
+  <div class="col-3">
+    <form (submit)="updateFilter('search', searchVal)">
+      <mat-form-field style="width: 100%">
+        <mat-label>Search</mat-label>
+        <input matInput [ngModelOptions]="{standalone: true}" [(ngModel)]="searchVal" />
+        <button mat-button *ngIf="searchVal" type="button" matSuffix mat-icon-button aria-label="Clear" (click)="searchVal=''">
+          <i class="fa fa-close" aria-hidden="true"></i>
+        </button>
+        <button mat-button *ngIf="searchVal" matSuffix mat-icon-button type="submit">
+          <i class="fa fa-search" aria-hidden="true"></i>
+        </button>
+      </mat-form-field>
+    </form>
+  </div>
 </div>
 <button mat-raised-button color="primary" type="submit" (click)="export()">Export filtered messages</button>
-            
-<div class="row" style="margin-bottom: 10px; padding: 10px; text-align: center; background: rgba(200, 200, 200, 0.4)"  >
-  <div class="col-2" style="cursor: pointer;"  [hidden]="pageInformation.current === 1" (click)="page=page-1; loadSms();">
-      <i class="fa fa-arrow-left"></i>
+
+<div class="row" style="margin-bottom: 10px; padding: 10px; text-align: center; background: rgba(200, 200, 200, 0.4)">
+  <div class="col-2" style="cursor: pointer;" [hidden]="pageInformation.current === 1" (click)="page=page-1; loadSms();">
+    <i class="fa fa-arrow-left"></i>
     Go back
   </div>
   <div *ngIf="pageInformation.current === 1" class="col-2"></div>
   <div class="col-8" style="text-decoration: underline">
     Showing {{ pageInformation.current }} of {{ pageInformation.pagesLength }} pages.
   </div>
-  <div class="col-2" style="cursor: pointer;" [hidden]="pageInformation.pagesLength === pageInformation.current" (click)="page=page+1; loadSms();">
+  <div class="col-2" style="cursor: pointer;" [hidden]="pageInformation.pagesLength === pageInformation.current"
+    (click)="page=page+1; loadSms();">
     Go next
     <i class="fa fa-arrow-right"></i>
   </div>

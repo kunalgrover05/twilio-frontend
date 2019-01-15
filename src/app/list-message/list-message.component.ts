@@ -27,11 +27,13 @@ export class ListMessageComponent implements OnInit {
 
   page = 1;
   loading = false;
+  searchVal = '';
 
   filter = {
     message: 'all',
     order: 'new',
-    tag: "ALL"
+    tag: "ALL",
+    search: this.searchVal
   }
 
   updateFilter(type: string, event) {
@@ -103,6 +105,9 @@ export class ListMessageComponent implements OnInit {
       params['tag'] = this.filter.tag;
     }
 
+    if (this.filter.search != '') {
+      params['search'] = this.filter.search;
+    }
     params['page'] = this.page;
     return params;
   }
@@ -221,12 +226,12 @@ export class ListMessageComponent implements OnInit {
       params: this.getParams(),
       headers: {
         'Authorization': 'Token ' + this.state.getToken(),
-        'Content-Type': 'application/vnd.openxml...sheet'
+        'Content-Type': 'text/csv'
       },
       responseType: 'blob'
     })
       .subscribe(data => {
-        saveAs(data, 'export.xlsx');
+        saveAs(data, 'export.csv');
 
         this.loading = false;
       });
