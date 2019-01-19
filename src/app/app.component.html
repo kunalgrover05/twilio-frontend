@@ -1,33 +1,46 @@
 <div class="container-fluid">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a class="navbar-brand" href="#">Menu</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                  <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                  <ul class="navbar-nav">
-                    <li class="nav-item active">
-                      <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/view">Sent / Received messages</a>
-                    </li>      
-                    <li class="nav-item">
-                      <a class="nav-link" href="http://twilio-backend-dev.us-east-1.elasticbeanstalk.com/admin/core/customer">Customers</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="http://twilio-backend-dev.us-east-1.elasticbeanstalk.com/admin/core/messagetemplate">Message Templates</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="http://twilio-backend-dev.us-east-1.elasticbeanstalk.com/admin/core/tag">Tags</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="http://twilio-backend-dev.us-east-1.elasticbeanstalk.com/uploadContacts">Upload contacts</a>
-                    </li>
-                  </ul>
-                </div>
-              </nav>
-              
-              
-<router-outlet></router-outlet>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Menu</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/view">Sent / Received messages</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/analysis">Reports</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://twilio-backend-dev.us-east-1.elasticbeanstalk.com/admin/core/customer">Customers</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://twilio-backend-dev.us-east-1.elasticbeanstalk.com/admin/core/messagetemplate">Message
+            Templates</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://twilio-backend-dev.us-east-1.elasticbeanstalk.com/admin/core/tag">Tags</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://twilio-backend-dev.us-east-1.elasticbeanstalk.com/uploadContacts">Upload
+            contacts</a>
+        </li>
+
+      </ul>
+
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li class="nav-item">
+        <a class="nav-link" style="cursor: pointer" (click)="state.logout()">Logout</a>
+      </li>
+    </ul>
+  </nav>
+
+
+  <router-outlet></router-outlet>
 </div>

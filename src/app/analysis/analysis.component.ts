@@ -25,6 +25,7 @@ export class AnalysisComponent implements OnInit {
       this.filter.time = value;
       this.startDate = moment().subtract(value, 'days').toDate();
       this.loadPercentData();
+      this.loadUserData();
     }
   }
 
@@ -33,8 +34,72 @@ export class AnalysisComponent implements OnInit {
 
   ngOnInit() {
     this.loadPercentData();
+    this.loadUserData();
   }
 
+  loadUserData() {
+    this.http.get(environment.base_url + '/userSmsAnalytics/', {
+      headers: {
+        'Authorization': "Token " + this.state.getToken()
+      },
+      params: {
+        startDate: this.startDate.toISOString(),
+        endDate: this.endDate.toISOString()
+      }
+    }).subscribe(resp => {
+      var dataArr = (resp as Array<any>);
+      var userWiseData = {}
+      for (var data of dataArr) {
+        console.log(data);
+        if (!(data['sent_by__username'] in userWiseData)) {
+          userWiseData[data['sent_by__username']] = []
+        }
+        userWiseData[data['sent_by__username']].push({
+          t: moment(data['created__date']).toDate(),
+          y: data['total']
+        })
+      }
+
+      const chartData = [];
+      for (var key in userWiseData) {
+        const color = Math.floor(Math.random() * 256);
+        chartData.push({
+          label: 'User #' + key.toString(),
+          data: userWiseData[key],
+          backgroundColor: 'rgba(' + color + ', ' + (255 - color) +  ' , 0, 0.5)',
+          borderColor: 'rgba(' + color + ', ' + (255 - color) + ', 0, 0.5)',
+          fill: false
+        })
+      }
+
+      new Chart('userChart', {
+        type: 'line',
+        data: {
+          datasets: chartData
+        },
+        options: {
+          title: {
+            display: true,
+            text: 'User based SMS sent'
+        },
+          scales: {
+            xAxes: [{
+              type: 'time',
+              time: {
+                unit: 'day',
+                unitStepSize: 1,
+                displayFormats: {
+                  'day': 'MMM DD'
+                }
+
+              }
+            }]
+          }
+        }
+      });
+
+    })
+  }
   loadPercentData() {
     if (this.loadPercentDataSubscription) {
       this.loadPercentDataSubscription.unsubscribe();
@@ -88,6 +153,10 @@ export class AnalysisComponent implements OnInit {
           }]
         },
         options: {
+          title: {
+            display: true,
+            text: 'Customer analysis'
+        },
           scales: {
             xAxes: [{
               type: 'time',
