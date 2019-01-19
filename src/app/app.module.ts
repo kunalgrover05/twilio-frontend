@@ -11,6 +11,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import { StateService } from './state.service';
 import { AuthGuardService } from './auth-guard-service';
+import { AnalysisComponent } from './analysis/analysis.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { AuthGuardService } from './auth-guard-service';
     SendMessageComponent,
     ListMessageComponent,
     LoginComponent,
+    AnalysisComponent,
   ],
   imports: [
     BrowserModule,
