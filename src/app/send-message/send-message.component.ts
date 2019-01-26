@@ -120,6 +120,7 @@ export class SendMessageComponent implements OnInit {
   }
 
   sendMessageFn(user) {
+    this.sent[user.id] = 'Sending';
     this.http.post(environment.base_url + '/send_message/', {
       customer: user.id,
       message: this.message,
@@ -131,7 +132,11 @@ export class SendMessageComponent implements OnInit {
       .subscribe(data => {
         console.log("MESSAGE SENT");
         console.log(data);
-        this.sent[user.id] = true;
+        this.sent[user.id] = 'Success';
+      }, err => {
+        console.log(err);
+        this.sent[user.id] = err['error']['non_field_errors'][0];
+        console.log(this.sent[user.id]);
       });
   }
 

@@ -109,7 +109,14 @@
         <button mat-raised-button color="primary" [disabled]="message == null" (click)="sendMessageFn(user)">Send</button>
       </div>
       <div class="col-md-3 col-6">
-        <div *ngIf="sent[user.id]" class="alert alert-success" role="alert">
+        <div *ngIf="sent[user.id] == 'Sending'" class="alert alert-info" role="alert">
+          <strong>Sending</strong>
+        </div>
+        <div *ngIf="sent[user.id] && sent[user.id] != 'Sending' && sent[user.id] != 'Success'" class="alert alert-danger"
+          role="alert">
+          <strong>{{sent[user.id]}}</strong>
+        </div>
+        <div *ngIf="sent[user.id] == 'Success'" class="alert alert-success" role="alert">
           <strong>Message sent successfully!</strong>
         </div>
       </div>
