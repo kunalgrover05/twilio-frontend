@@ -27,7 +27,7 @@
 
   </div>
 
-  <div class="col-3">
+  <div class="col-2">
     <mat-form-field style="width: 100%">
       <mat-label>Order by</mat-label>
       <mat-chip-list>
@@ -37,7 +37,18 @@
     </mat-form-field>
   </div>
 
-  <div class="col-3">
+  <div class="col-2">
+    <mat-form-field style="width: 100%">
+      <mat-label>Responded</mat-label>
+      <mat-chip-list>
+        <mat-chip (click)="updateFilter('responded', 'all')" [selected]="filter.responded === 'all'">All</mat-chip>
+        <mat-chip (click)="updateFilter('responded', 'no')" [selected]="filter.responded === 'no'">No</mat-chip>
+        <mat-chip (click)="updateFilter('responded', 'yes')" [selected]="filter.responded === 'yes'">Yes</mat-chip>
+      </mat-chip-list>
+    </mat-form-field>
+  </div>
+
+  <div class="col-2">
     <form (submit)="updateFilter('search', searchVal)">
       <mat-form-field style="width: 100%">
         <mat-label>Search</mat-label>

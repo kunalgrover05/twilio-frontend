@@ -33,7 +33,8 @@ export class ListMessageComponent implements OnInit {
     message: 'all',
     order: 'new',
     tag: "ALL",
-    search: this.searchVal
+    search: this.searchVal,
+    responded: 'all'
   }
 
   updateFilter(type: string, event) {
@@ -89,6 +90,17 @@ export class ListMessageComponent implements OnInit {
         break;
       case 'no':
         params['no_message'] = '1';
+        break;
+    }
+
+    switch (this.filter.responded) {
+      case 'all':
+        break;
+      case 'yes':
+        params['responded'] = '1';
+        break;
+      case 'no':
+        params['responded'] = '0';
         break;
     }
 
