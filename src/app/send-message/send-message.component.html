@@ -66,7 +66,7 @@
   <input type="hidden" formControlName="customer" >
   
   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="update($event)" [displayWith]="displayFn">
-    <mat-option *ngFor="let user of filteredOptions | async"  [value]="user">{{user.name}}</mat-option>
+    <mat-option *ngFor="let user of filteredOptions | async"  [value]="user">{{user.first_name}}</mat-option>
   </mat-autocomplete>
   <div class="col-7">
       <mat-form-field style="width: 100%">
@@ -100,7 +100,7 @@
   <div class="col-10">
     <div *ngFor="let user of users" class="row">
       <div class="col-md-3 col-6">
-        {{user.name}}
+        {{user.first_name}}
       </div>
       <div class="col-md-3 col-6">
         {{ user.phone_number }}
